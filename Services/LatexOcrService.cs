@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace YourNamespace.Services
+namespace OCR_MATH_ASSISTANT.Services
 {
     public static class LatexOcrService
     {

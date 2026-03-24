@@ -2,10 +2,10 @@
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
-using YourNamespace.Services; // Asume que tus servicios están en YourNamespace.Services
-using YourNamespace.Models; // Asume que tus modelos están en YourNamespace.Models
+using OCR_MATH_ASSISTANT.Services;
+using OCR_MATH_ASSISTANT.Models;
 
-namespace YourNamespace // Define un namespace para tu proyecto
+namespace OCR_MATH_ASSISTANT
 {
     class Program
     {
@@ -50,7 +50,6 @@ namespace YourNamespace // Define un namespace para tu proyecto
             }
 
             Bitmap? captura = null;
-            Rectangle? captureRegion = null; // Usamos un nullable Rectangle para la región
 
             switch (opcionInput)
             {
@@ -61,22 +60,23 @@ namespace YourNamespace // Define un namespace para tu proyecto
                     captura = ScreenCaptureService.CaptureActiveScreen();
                     break;
                 case "3":
-                    Console.WriteLine("Ingrese las coordenadas y dimensiones del área:");
-                    Console.Write("Ingrese X: ");
-                    if (!int.TryParse(Console.ReadLine(), out int x)) { Console.WriteLine("X no es válido, usando 0."); x = 0; }
-                    Console.Write("Ingrese Y: ");
-                    if (!int.TryParse(Console.ReadLine(), out int y)) { Console.WriteLine("Y no es válido, usando 0."); y = 0; }
-                    Console.Write("Ancho: ");
-                    if (!int.TryParse(Console.ReadLine(), out int ancho)) { Console.WriteLine("Ancho no válido, usando 100."); ancho = 100; }
-                    Console.Write("Alto: ");
-                    if (!int.TryParse(Console.ReadLine(), out int alto)) { Console.WriteLine("Alto no válido, usando 100."); alto = 100; }
+                    Console.WriteLine("Selecciona el área matemática con el mouse...");
+                    Console.WriteLine("  - Click izquierdo y arrastra para seleccionar");
+                    Console.WriteLine("  - ESC para cancelar");
+                    Console.WriteLine("  - Esperando selección...");
 
-                    // Asegurar que las dimensiones no sean cero o negativas
-                    if (ancho <= 0) ancho = 100;
-                    if (alto <= 0) alto = 100;
+                    Rectangle? selectedArea = AreaSelector.SelectArea();
 
-                    captureRegion = new Rectangle(x, y, ancho, alto);
-                    captura = ScreenCaptureService.CaptureRegion(captureRegion.Value); // .Value porque sabemos que no es null aquí
+                    if (selectedArea.HasValue)
+                    {
+                        Console.WriteLine($"Área seleccionada: X={selectedArea.Value.X}, Y={selectedArea.Value.Y}, Ancho={selectedArea.Value.Width}, Alto={selectedArea.Value.Height}");
+                        captura = AreaSelector.CaptureArea(selectedArea.Value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Selección cancelada.");
+                        return;
+                    }
                     break;
                 default:
                     Console.WriteLine("Opción no válida.");
@@ -100,7 +100,7 @@ namespace YourNamespace // Define un namespace para tu proyecto
 
                 Console.WriteLine("\n--- Procesando la imagen ---");
 
-                string textoReconocido;
+                string textoReconocido = string.Empty;
                 bool usóLatexOcr = false;
 
                 // Intentar usar LaTeX-OCR primero si está disponible

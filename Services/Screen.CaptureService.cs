@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms; // Necesitas este using para Screen, Cursor, Rectangle, Graphics
 
-namespace YourNamespace.Services // Asegúrate de que el namespace sea consistente
+namespace OCR_MATH_ASSISTANT.Services
 {
     public static class ScreenCaptureService // Una clase estática es apropiada si no tiene estado
     {

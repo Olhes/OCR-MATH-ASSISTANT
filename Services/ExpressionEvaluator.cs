@@ -3,51 +3,67 @@ using System;
 using System.Data; // Necesitas este using para DataTable.Compute
 using System.Text; // Necesitas este using para StringBuilder
 
-namespace YourNamespace.Services
+namespace OCR_MATH_ASSISTANT.Services
 {
     public static class ExpressionEvaluator // Clase estática para servicios sin estado
     {
         /// <summary>
         /// Limpia el texto reconocido por OCR para que sea una expresión matemática válida.
-        /// Este es un paso crítico y puede requerir ajustes basados en la precisión del OCR.
+        /// Mejorado para caracteres matemáticos comunes.
         /// </summary>
         /// <param name="rawExpression">La cadena de texto cruda del OCR.</param>
         /// <returns>La expresión limpia.</returns>
         public static string CleanExpression(string rawExpression)
         {
             if (string.IsNullOrWhiteSpace(rawExpression))
-            {
                 return string.Empty;
-            }
 
             // Quitar espacios, saltos de línea y otros caracteres no deseados
             string cleaned = rawExpression.Replace(" ", "")
                                           .Replace("\n", "")
                                           .Replace("\r", "");
 
-            // Reemplazos comunes de OCR que pueden ser problemáticos para expresiones matemáticas
-            cleaned = cleaned.Replace("x", "*")      // 'x' como multiplicación
+            // Reemplazos comunes de OCR para matemáticas
+            cleaned = cleaned.Replace("×", "*")      // Símbolo de multiplicación
+                             .Replace("÷", "/")      // Símbolo de división
+                             .Replace("x", "*")      // 'x' como multiplicación
                              .Replace("X", "*")      // 'X' como multiplicación
-                             .Replace(",", ".")      // Comas como decimales (ej. 1,5 -> 1.5)
-                             .Replace("—", "-")      // Guión largo por guión normal
-                             .Replace("=", "")      // Si OCR detecta '='
-                             .Replace("_", "-");    // Guión bajo por guión (a veces OCR lo confunde)
-            
-            // Más reemplazos si identificas patrones de error comunes
-            // cleaned = cleaned.Replace("o", "0"); // Cuidado con esto, 'o' es una letra. Solo si es un problema recurrente.
+                             .Replace("·", "*")      // Punto de multiplicación
+                             .Replace(",", ".")      // Comas como decimales
+                             .Replace("—", "-")      // Guión largo
+                             .Replace("=", "")       // Eliminar iguales
+                             .Replace("_", "-")      // Guión bajo
+                             .Replace("²", "^2")     // Cuadrado
+                             .Replace("³", "^3")     // Cubo
+                             .Replace("√", "sqrt")   // Raíz cuadrada
+                             .Replace("π", "3.14159") // Pi
+                             .Replace("∞", "999999")  // Infinito (aproximado)
+                             .Replace("∑", "sum")    // Sumatoria
+                             .Replace("∫", "integral") // Integral
+                             .Replace("∂", "derivative") // Derivada parcial
+                             .Replace("∆", "delta")   // Delta
+                             .Replace("α", "alpha")   // Alpha
+                             .Replace("β", "beta")    // Beta
+                             .Replace("γ", "gamma")   // Gamma
+                             .Replace("θ", "theta")   // Theta
+                             .Replace("λ", "lambda")  // Lambda
+                             .Replace("μ", "mu")      // Mu
+                             .Replace("σ", "sigma")   // Sigma
+                             .Replace("φ", "phi")     // Phi
+                             .Replace("ω", "omega")   // Omega
+            ;
 
-            // Filtrar solo caracteres válidos para una expresión matemática básica
-            // (números, operadores +, -, *, /, %, paréntesis)
+            // Filtrar caracteres válidos para expresión matemática
             StringBuilder sb = new StringBuilder();
             foreach (char c in cleaned)
             {
-                if (char.IsDigit(c) || c == '.' || c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '(' || c == ')')
+                if (char.IsDigit(c) || c == '.' || c == '+' || c == '-' || c == '*' || c == '/' || 
+                    c == '%' || c == '(' || c == ')' || c == '^' || char.IsLetter(c))
                 {
                     sb.Append(c);
                 }
-                // Si quieres soportar potencia '^', tendrías que añadirla aquí,
-                // pero recuerda que DataTable.Compute no la soporta directamente.
             }
+            
             return sb.ToString();
         }
 

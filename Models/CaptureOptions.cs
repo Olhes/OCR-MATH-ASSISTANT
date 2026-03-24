@@ -1,7 +1,7 @@
 #nullable enable
 using System.Drawing;
 
-namespace YourNamespace.Models
+namespace OCR_MATH_ASSISTANT.Models
 {
     public class CaptureOptions
     {

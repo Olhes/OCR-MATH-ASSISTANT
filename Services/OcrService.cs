@@ -5,7 +5,7 @@ using System.IO;
 using Tesseract;
 // using System.Drawing.Imaging; // You can keep this or remove it; the fully qualified name handles it.
 
-namespace YourNamespace.Services
+namespace OCR_MATH_ASSISTANT.Services
 {
     public static class OcrService // Clase estática para servicios sin estado
     {
